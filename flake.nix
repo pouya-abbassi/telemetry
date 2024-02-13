@@ -9,18 +9,21 @@
       let
         pkgs = import nixpkgs { inherit system; };
 
+        mPkgs = import nixpkgs {
+          inherit system;
+          crossSystem = nixpkgs.lib.systems.examples.musl64 // { isStatic = true; };
+        };
+
         buildToolsDeps = (with pkgs; [
           fish
-          clang
           cmake
           ninja
         ]);
 
-        deps = (with pkgs; [
-          (drogon.override {
+        drogon = pkgs: pkgs.drogon.override {
             sqliteSupport = false;
-          })
-        ]);
+        };
+        deps = [ drogon ];
 
       in {
         inherit pkgs;
@@ -35,17 +38,14 @@
             '';
         };
 
-        packages.default = pkgs.stdenv.mkDerivation {
-          pname = "telemetry";
-          version = "0.1.0";
-
-          nativeBuildInputs = buildToolsDeps;
-          buildInputs = deps;
-
-          src = ./.;
-
-          cmakeFlags = [];
+        packages.default = pkgs.callPackage ./nix/telemetry.nix {
+          drogon = drogon pkgs;
         };
+
+        packages.static = mPkgs.callPackage ./nix/telemetry.nix {
+          drogon = drogon mPkgs;
+        };
+
       }
     );
 }
