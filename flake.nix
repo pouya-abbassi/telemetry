@@ -30,8 +30,7 @@
 
         devShells.default = pkgs.mkShell {
           nativeBuildInputs = buildToolsDeps;
-          buildInputs = deps;
-
+          buildInputs = [ (drogon pkgs) ];
           shellHook =
             ''
               fish && exit
