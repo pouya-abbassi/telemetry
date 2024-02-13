@@ -34,6 +34,18 @@
               fish && exit
             '';
         };
+
+        packages.default = pkgs.stdenv.mkDerivation {
+          pname = "telemetry";
+          version = "0.1.0";
+
+          nativeBuildInputs = buildToolsDeps;
+          buildInputs = deps;
+
+          src = ./.;
+
+          cmakeFlags = [];
+        };
       }
     );
 }

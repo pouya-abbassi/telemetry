@@ -19,3 +19,6 @@ target_link_libraries(main PRIVATE Drogon::Drogon)
 
 add_custom_command(TARGET main POST_BUILD
   COMMAND ${CMAKE_STRIP} main)
+
+include(GNUInstallDirs)
+install(TARGETS main)
