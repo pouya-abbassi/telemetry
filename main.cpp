@@ -1,16 +1,28 @@
 #include <drogon/drogon.h>
+
+#include <fstream>
+#include <iostream>
+
 using namespace drogon;
 
 int main() {
   app().registerHandler(
       "/",
-      [](const HttpRequestPtr &,
+      [](const HttpRequestPtr &req,
          std::function<void(const HttpResponsePtr &)> &&callback) {
         auto resp = HttpResponse::newHttpResponse();
+
+        std::ofstream out;
+        out.open("/tmp/telemetry.txt", std::ios_base::app);
+        auto body = req->getBody().data();
+        std::cout << body << std::endl;
+        out << body << std::endl;
+        out.close();
+
         resp->setBody("Hello, World!");
         callback(resp);
       },
-      {Get});
+      {Get, Post});
 
   app()
       .setLogPath("./")
